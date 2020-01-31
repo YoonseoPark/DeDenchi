@@ -1,10 +1,12 @@
 <template>
+  <v-app>
   <div class="main-container">
     <div class="title">De-Den-Chi</div>
     <div class="sub-container">
       <router-view></router-view>
     </div>
   </div>
+  </v-app>
 </template>
 
 <script>
@@ -34,7 +36,7 @@ export default {
   }
   .sub-container {
     position: absolute;
-    top: 150px;
+    top: 250px;
     bottom: 0;
     left: 0;
     right: 0;
@@ -48,12 +50,12 @@ export default {
   }
   .title {
     position: absolute;
-    top: 50px;
-    bottom: 450px;
-    left: 0;
-    right: 0;
+    top: 100px;
+    left: 0%;
+    right: 0%;
 
-    font-size: 50px;
+    font-size: 60px;
+    font-weight: bold;
     color: white;
 
   }

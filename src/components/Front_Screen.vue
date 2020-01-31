@@ -11,7 +11,7 @@
             </div>
         </div>
         <div class="my-2 start">
-            <v-btn x-large color="success" dark min-width="300px" min-height="80px"
+            <v-btn x-large color="black" dark min-width="300px" min-height="80px"
                    router :to="{name:'about'}">START</v-btn>
         </div>
     </div>

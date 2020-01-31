@@ -1,11 +1,15 @@
 <template>
-  <v-app>
-  <div class="main-container">
-    <div class="title">De-Den-Chi</div>
-    <div class="sub-container">
-      <router-view></router-view>
-    </div>
-  </div>
+  <v-app id="app">
+    <v-content>
+      <v-container fluid>
+        <div class="main-container">
+          <div class="main-title">De-Den-Chi</div>
+          <div class="sub-container">
+            <router-view></router-view>
+          </div>
+        </div>
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
@@ -28,6 +32,9 @@ export default {
   * {
     box-sizing: border-box;
   }
+  .container {
+    padding: 0px;
+  }
   .main-container {
     background-color: powderblue;
     height: 100vh;
@@ -48,7 +55,7 @@ export default {
     margin-top: 0;
     border-radius: 15px;
   }
-  .title {
+  .main-title {
     position: absolute;
     top: 100px;
     left: 0%;

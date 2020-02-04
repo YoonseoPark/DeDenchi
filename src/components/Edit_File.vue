@@ -8,81 +8,33 @@
                          flat
                  >
                      <v-list-item-group
-                             v-model="settings"
                              multiple
+                             v-model="this.clickedIndex"
+                             :value="this.nameList"
                      >
-                         <v-list-item>
-                             <template v-slot:default="{ active, toggle }">
-                                 <v-list-item-action>
-                                     <v-checkbox
-                                             v-model="active"
-                                             color="primary"
-                                             @click="toggle"
-                                     ></v-checkbox>
-                                 </v-list-item-action>
-
-                                 <v-list-item-content>
-                                     <v-list-item-title>Notifications</v-list-item-title>
-                                 </v-list-item-content>
-                             </template>
-                         </v-list-item>
-
-                         <v-list-item>
-                             <template v-slot:default="{ active, toggle }">
-                                 <v-list-item-action>
-                                     <v-checkbox
-                                             v-model="active"
-                                             color="primary"
-                                             @click="toggle"
-                                     ></v-checkbox>
-                                 </v-list-item-action>
-
-                                 <v-list-item-content>
-                                     <v-list-item-title>Sound</v-list-item-title>
-                                 </v-list-item-content>
-                             </template>
-                         </v-list-item>
-
-                         <v-list-item>
-                             <template v-slot:default="{ active, toggle }">
-                                 <v-list-item-action>
-                                     <v-checkbox
-                                             v-model="active"
-                                             color="primary"
-                                             @click="toggle"
-                                     ></v-checkbox>
-                                 </v-list-item-action>
-
-                                 <v-list-item-content>
-                                     <v-list-item-title>Video sounds</v-list-item-title>
-                                 </v-list-item-content>
-                             </template>
-                         </v-list-item>
-
-                         <v-list-item>
-                             <template v-slot:default="{ active, toggle }">
-                                 <v-list-item-action>
-                                     <v-checkbox
-                                             v-model="active"
-                                             color="primary"
-                                             @click="toggle"
-                                     ></v-checkbox>
-                                 </v-list-item-action>
-
-                                 <v-list-item-content>
-                                     <v-list-item-title>Invites</v-list-item-title>
-                                 </v-list-item-content>
-                             </template>
+                         <v-list-item
+                                 v-for="name in this.nameList.name"
+                                 :key="name.index"
+                         >
+                             <v-list-item-action>
+                                 <v-checkbox></v-checkbox>
+                             </v-list-item-action>
+                             <v-list-item-content>
+                                 {{ name }}
+                             </v-list-item-content>
                          </v-list-item>
                      </v-list-item-group>
                  </v-list>
              </div>
              <div class="delete">
-                 <v-btn color="black" large dark>Delete</v-btn>
+                 <v-btn color="black" large dark @click="create_json">Delete</v-btn>
              </div>
          </div>
         <div class="info-view">
-            <div>name</div>
+            <div>
+                <v-text-field v-model="input_name"></v-text-field>
+                <v-btn color="black" large dark @click="add_json">add</v-btn>
+            </div>
         </div>
     </div>
 </template>
@@ -91,7 +43,46 @@
     export default{
         data () {
             return {
-                fileName: 'text1'
+                fileName: 'text1',
+                clickedIndex: [],
+                nameList: {
+                    name: [
+                        '박윤서',
+                        '박수현'
+                    ]
+                },
+                input_name: null
+            }
+        },
+        created() {
+            const path = './src/assets/save/test.json'
+            const fs = require('fs')
+            fs.readFile(path, 'utf8', function (err, data) {
+                console.log(data)
+                console.log(JSON.parse(data))
+            })
+        },
+        methods: {
+            btn_delete() {
+                for( var i=0; i<this.clickedIndex.length; i++){
+                    this.nameList.splice(i,1)
+
+                }
+            },
+            create_json() {
+
+            },
+            add_json() {
+                var path = './src/assets/save/test.json'
+                const fs = require('fs')
+                fs.stat(path, function(err, stats){
+                    if(stats.isFile(path)){
+                        console.log("The File is already exist")
+                    } else{
+                        const wstream = fs.createWriteStream('./src/assets/save/test.json')
+                        wstream.write("")
+                    }
+                })
             }
         }
     }
@@ -128,5 +119,6 @@
     .list-item {
         flex: 6;
         padding: 5px;
+        overflow: auto;
     }
 </style>

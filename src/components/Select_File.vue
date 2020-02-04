@@ -26,7 +26,7 @@
             const files = require.context(
                 '@/assets/save',
                 true,
-                /^.*\.txt$/
+                /^.*\.json$/
             )
             this.items = files.keys()
             console.log(files.keys())

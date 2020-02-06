@@ -3,7 +3,7 @@
         <div class="select-file">
             <v-select
                     v-model="model"
-                    :items="items"
+                    :items="jsonKey"
                     label="select your file"
                     outlined
             ></v-select>
@@ -19,17 +19,15 @@
 <script>
     export default{
         data: () => ({
-            items: [],
+            jsonKey: [],
             model: null
         }),
         created() {
-            const files = require.context(
-                '@/assets/save',
-                true,
-                /^.*\.json$/
-            )
-            this.items = files.keys()
-            console.log(files.keys())
+            const files = require('../assets/save/nameList.json')
+            for(var i=0; i<(Object.keys(files)).length; i++){
+                this.jsonKey = Object.getOwnPropertyNames(files)
+            }
+            console.log(Object.keys(files).length)
         },
         methods: {
 

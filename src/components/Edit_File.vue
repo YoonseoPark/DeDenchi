@@ -2,7 +2,7 @@
     <div class="container">
          <div class="list-view">
             <h3>File name : {{ this.fileName }}</h3>
-             <div class="list-item">
+             <div id="list-item">
                  <v-list>
                      <v-list-item-group
                              multiple
@@ -50,7 +50,7 @@
             </div>
             <div class="info-item-view-2">
                 <v-btn color="black" large dark router :to="{ name: 'about' }">BACK</v-btn>
-                <v-btn color="black" large dark @click="check">SAVE</v-btn>
+                <v-btn color="black" large dark >SAVE</v-btn>
             </div>
         </div>
     </div>
@@ -74,10 +74,16 @@
                 console.log(JSON.parse(data))
             })
         },
+        watch: {
+            nameList: function () {
+                // DOM not updated yet
+                this.$nextTick(function () {
+                    // DOM updated
+                    document.getElementById('list-item').scrollTop = document.getElementById('list-item').scrollHeight;
+                });
+            }
+        },
         methods: {
-            check() {
-                console.log(this.clickedIndex)
-            },
             btn_delete() {
                 this.clickedIndex = this.clickedIndex.sort(function(a, b) { // 오름차순
                     return a - b;
@@ -162,7 +168,7 @@
         flex: 1;
         text-align: right;
     }
-    .list-item {
+    #list-item {
         flex: 6;
         padding: 5px;
         overflow: auto;

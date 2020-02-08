@@ -60,19 +60,18 @@
     export default{
         data () {
             return {
-                fileName: 'text1',
+                fileName: null,
                 clickedIndex: [],
                 nameList: [],
                 input_name: null
             }
         },
         created() {
-            const path = './src/assets/save/nameList.json'
-            const fs = require('fs')
-            fs.readFile(path, 'utf8', function (err, data) {
-                console.log(data)
-                console.log(JSON.parse(data))
-            })
+            var getData = this.$route.params.nameList
+            this.fileName = this.$route.params.fileName
+            for(var i=0; i<getData.length; i++){
+                this.nameList.push(getData[i])
+            }
         },
         watch: {
             nameList: function () {
@@ -98,7 +97,6 @@
                 if(this.input_name != null) {
                     this.nameList.push(this.input_name)
                     this.input_name = null
-                    console.log(this.nameList)
                 }else {
                     alert("Please input anything")
                 }

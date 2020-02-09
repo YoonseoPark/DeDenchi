@@ -46,11 +46,83 @@
                     >
                     </v-text-field>
                     <v-btn color="black" small dark @click="pushName">ADD</v-btn>
+                    <v-dialog
+                            v-model="checkData.inputTextIsEmpty"
+                            max-width="290"
+                    >
+                        <v-card>
+                            <v-card-title class="headline">Warning</v-card-title>
+
+                            <v-card-text>
+                                Please input anythings
+                            </v-card-text>
+
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                        color="green darken-1"
+                                        text
+                                        @click="checkData.inputTextIsEmpty = false"
+                                >
+                                    ok
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
                 </div>
             </div>
             <div class="info-item-view-2">
                 <v-btn color="black" large dark router :to="{ name: 'about' }">BACK</v-btn>
-                <v-btn color="black" large dark >SAVE</v-btn>
+                <v-btn color="black" large dark @click="saveNewData">SAVE</v-btn>
+                <v-dialog
+                        v-model="checkData.dataIsSaved"
+                        max-width="290"
+                >
+                    <v-card>
+                        <v-card-title class="headline">Success!</v-card-title>
+
+                        <v-card-text>
+                            Data is saved successful
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="checkData.dataIsSaved = false"
+                            >
+                                ok
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
+                <v-dialog
+                        v-model="checkData.fileNameIsEmpty"
+                        max-width="290"
+                >
+                    <v-card>
+                        <v-card-title class="headline">Input File's Name</v-card-title>
+
+                        <v-card-text>
+                            <v-text-field
+                                    v-model="fileName"
+                                    label="File name"
+                            ></v-text-field>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn
+                                    color="green darken-1"
+                                    text
+                                    @click="saveNewDataCallBack"
+                            >
+                                ok
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             </div>
         </div>
     </div>
@@ -63,7 +135,12 @@
                 fileName: null,
                 clickedIndex: [],
                 nameList: [],
-                input_name: null
+                input_name: null,
+                checkData: {
+                    inputTextIsEmpty: false,
+                    dataIsSaved: false,
+                    fileNameIsEmpty: false,
+                }
             }
         },
         created() {
@@ -98,15 +175,32 @@
                     this.nameList.push(this.input_name)
                     this.input_name = null
                 }else {
-                    alert("Please input anything")
+                    this.checkData.inputTextIsEmpty = true
                 }
             },
-            add_json() {
-                const path = './src/assets/save/nameList.json';
-                const fs = require('fs')
-                const wstream = fs.createWriteStream(path)
-                wstream.write("") //여기에 입력할 내용 입력 String타입만 가능
+            saveNewData(callback) {
+                if(this.fileName == null){
+                    this.checkData.fileNameIsEmpty = true
+                    callback()
+                }else{
+
+                    const path = './src/assets/save/nameList.json';
+                    const fs = require('fs')
+                    fs.readFile(path, 'utf8', (err, data)=>{
+                        let parsedData = JSON.parse(data);
+                        parsedData[this.fileName] = this.nameList
+                        fs.writeFile(path, JSON.stringify(parsedData, null, 2), (err) => {
+                            if(err) throw err;
+                        })
+                    })
+                    this.checkData.dataIsSaved = true
+                }
             },
+            saveNewDataCallBack(){
+                if(this.checkData.fileNameIsEmpty == true)
+                    this.checkData.fileNameIsEmpty = false
+                    this.saveNewData()
+            }
         }
     }
 </script>

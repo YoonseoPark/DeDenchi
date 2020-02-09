@@ -50,7 +50,7 @@
             </div>
             <div class="info-item-view-2">
                 <v-btn color="black" large dark router :to="{ name: 'about' }">BACK</v-btn>
-                <v-btn color="black" large dark >SAVE</v-btn>
+                <v-btn color="black" large dark @click="saveNewData">SAVE</v-btn>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
                 fileName: null,
                 clickedIndex: [],
                 nameList: [],
-                input_name: null
+                input_name: null,
             }
         },
         created() {
@@ -101,11 +101,17 @@
                     alert("Please input anything")
                 }
             },
-            add_json() {
+            saveNewData() {
                 const path = './src/assets/save/nameList.json';
                 const fs = require('fs')
-                const wstream = fs.createWriteStream(path)
-                wstream.write("") //여기에 입력할 내용 입력 String타입만 가능
+                fs.readFile(path, 'utf8', (err, data)=>{
+                    let parsedData = JSON.parse(data);
+                    parsedData[this.fileName] = this.nameList
+                    fs.writeFile(path, JSON.stringify(parsedData), (err) => {
+                        if(err) throw err;
+                    })
+                })
+                alert("Saved file")
             },
         }
     }

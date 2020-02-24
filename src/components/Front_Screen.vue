@@ -3,8 +3,7 @@
         <div class="about">
             <div class="text">
                 This is Freeware<br>
-                Make random team project<br>
-                Beta
+                FrontFront<br>
             </div>
             <div class="image">
                 <img src="@/assets/yamami.png">

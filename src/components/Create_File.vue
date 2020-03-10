@@ -80,6 +80,35 @@
                 </v-card>
             </v-dialog> <!-- input error 다이얼로그 -->
             <v-dialog
+                    v-model="dialog_ctrl.set_file_name"
+                    max-width="290"
+            >
+                <v-card>
+                    <v-card-title class="headline">Input File's Name</v-card-title>
+
+                    <v-card-text>
+                        <v-form>
+                            <v-text-field
+                                    v-model="file_name"
+                                    label="File name"
+                            ></v-text-field>
+                        </v-form>
+                    </v-card-text>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                                color="green darken-1"
+                                text
+                                @click="check_duplicated"
+                                @keypress.enter="check_duplicated"
+                        >
+                            ok
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog> <!-- input file name 다이얼로그 -->
+            <v-dialog
                     v-model="dialog_ctrl.data_is_saved"
                     max-width="290"
             >
@@ -145,14 +174,6 @@
                 }
             }
         },
-        created() {
-            if(this.$route.params.name_list.length != 0){
-                this.name_list = this.$route.params.name_list
-            }else{
-                this.$router.push({ name: 'select_file', params: {alert: true, alert_message: "Select a file you edit"} })
-            }
-            this.file_name = this.$route.params.file_name
-        },
         watch: {
             name_list: function () {
                 // DOM not updated yet
@@ -172,21 +193,11 @@
                 }
             },
             btn_back: function () {
-                this.$router.push('/')
+              this.$router.push('/')
             },
             btn_save: function () {
-                const fs = require('fs')
-                fs.readFile('nameList.json', 'utf8', (err, data) => {
-                    if(err) throw console.log(err)
-                    let fileNameList = JSON.parse(data)
-
-                    fileNameList[this.file_name] = this.name_list
-                    let save_data = JSON.stringify(fileNameList, null, 2)
-                    fs.writeFile('nameList.json', save_data, (err) => {
-                        if(err) throw console.log(err)
-                    })
-                    this.dialog_ctrl.data_is_saved = true
-                })
+                this.dialog_ctrl.file_name_is_exist = false
+                this.dialog_ctrl.set_file_name = true
             },
             btn_delete: function () {
                 this.clicked_index = this.clicked_index.sort(function(a, b) { // 오름차순
@@ -197,6 +208,29 @@
                     this.name_list.splice(this.clicked_index[i]-i, 1)
                 }
                 this.clicked_index = []
+            },
+            check_duplicated: function () {
+                this.dialog_ctrl.set_file_name = false
+                const fs = require('fs')
+                fs.readFile('nameList.json', 'utf8', (err, data) => {
+                    if(err) throw console.log(err)
+                    let fileNameList = JSON.parse(data)
+                    let keyArray = Object.getOwnPropertyNames(fileNameList)
+
+                    for(var i=0; i<keyArray.length; i++){
+                        if(this.file_name == keyArray[i]){
+                            //중복o
+                            this.dialog_ctrl.file_name_is_exist = true
+                            return 0
+                        }
+                    }
+                    fileNameList[this.file_name] = this.name_list
+                    let save_data = JSON.stringify(fileNameList, null, 2)
+                    fs.writeFile('nameList.json', save_data, (err) => {
+                        if(err) throw console.log(err)
+                    })
+                    this.dialog_ctrl.data_is_saved = true
+                })
             },
         }
     }
@@ -227,13 +261,13 @@
     .navi {
         display: flex;
     }
-    .btn_style {
-        outline: 0;
-        border: 0;
-    }
     .wrapper_btn_back {
         flex: 1;
         text-align: left;
+    }
+    .btn_style {
+        outline: 0;
+        border: 0;
     }
     .wrapper_btn_save {
         flex: 1;

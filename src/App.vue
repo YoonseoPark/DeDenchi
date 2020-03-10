@@ -3,10 +3,7 @@
     <v-content>
       <v-container fluid>
         <div class="main-container">
-          <div class="main-title">De-Den-Chi<span style="font-size:15px">1.0v</span></div>
-          <div class="sub-container">
-            <router-view></router-view>
-          </div>
+          <router-view></router-view>
         </div>
       </v-container>
     </v-content>
@@ -38,35 +35,15 @@ export default {
   .main-container {
     display: flex;
     flex-direction: column;
-    background: linear-gradient(45deg, #46E0E6, #00FFC3);
+    background: #AABBCC;
     height: 100vh;
     max-width: none;
     text-align: center;
+
+
   }
-  .sub-container {
-    flex: 1;
-    position: absolute;
-    top: 12em;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    width: 60%;
-    height: 60%;
-    background-color: white;
-    margin: 0 auto auto;
-    border-radius: 15px;
-  }
-  .main-title {
-    flex: 1;
-    position: absolute;
-    top: 1em;
-    left: 0%;
-    right: 0%;
-
-    font-size: 70px;
-    font-weight: bold;
-    color: white;
-
+  .sub-container > div {
+    width: 100%;
+    height: 100%;
   }
 </style>

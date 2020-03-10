@@ -7,14 +7,14 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    //component: components.Home
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue')
+    name: 'select_file',
+    props: true,
+    component: () => import(/* webpackChunkName: "select_file" */ '../views/Select_File.vue')
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/create',
+    name: 'create',
+    component: () => import(/* webpackChunkName: "create" */ '../views/Create.vue')
   },
   {
     path: '/edit',
@@ -26,7 +26,7 @@ const routes = [
     path: '/result',
     name: 'result',
     props: true,
-    component: () => import(/* webpackChunkName: "edit" */ '../views/Result.vue')
+    component: () => import(/* webpackChunkName: "result" */ '../views/Result.vue')
   }
 ]
 

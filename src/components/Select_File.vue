@@ -1,180 +1,240 @@
 <template>
-    <div class="root-wrapper">
-        <div class="select-wrapper">
-            <div class="select-file">
+    <div class="sub-container">
+        <div class="root-wrapper">
+            <div class="function">
+                <v-btn class="btn-function" fab small
+                       router :to="{ name:'create' }"><i class="fas fa-plus fa-1x"></i></v-btn>
+                <v-btn class="btn-function" fab small
+                       router :to="{ name:'edit', params: { file_name: selected_file_name, name_list: name_lists } }"><i class="far fa-edit fa-1x"></i></v-btn>
+                <v-btn class="btn-function" fab small
+                       @click="delete_file"><i class="far fa-trash-alt fa-1x"></i></v-btn>
+            </div>
+            <div class="wrapper">
                 <v-select
-                        v-model="selectedFileName"
-                        :items="jsonKey"
+                        v-model="selected_file_name"
+                        :items="file_name_list"
                         label="select your file"
+                        class="file-selecter"
                         outlined
+                        height="20%"
+                        hide-details
                 ></v-select>
-            </div>
-            <div class="edit-btn">
-                <v-btn class="mx-2" height="56px" dark color="dark"
-                       router :to="{ name:'edit', params: { fileName: selectedFileName, nameList: nameLists } }">
-                    <v-icon dark>mdi-plus</v-icon>
-                </v-btn>
-            </div>
-        </div>
-        <v-alert
-                type="error"
-                :value="alert">
-            <strong>ファイルを選択し、人数やチーム数を入力したか確認してください。</strong>
-        </v-alert>
-            <div class="info-divide">
-                <div class="input-count">
-                    <v-row align="center">
-                        <v-checkbox
-                                v-model="checkBox_first"
-                                hide-details
-                                class="shrink mr-2 mt-0"
-                        ></v-checkbox>
-                        <v-text-field
-                                :disabled="first_textField_state"
-                                v-model="getPeopleNum"
-                                name="getPeopleNum"
-                                label="人数で分ける"
-                        ></v-text-field>
-                    </v-row>
-                    <v-row align="center">
-                        <v-checkbox
-                                v-model="checkBox_second"
-                                hide-details
-                                class="shrink mr-2 mt-0"
-                        ></v-checkbox>
-                        <v-text-field
-                                :disabled="second_textField_state"
-                                v-model="getTeamNum"
-                                name="getTeamNum"
-                                label="チーム数で分ける"
-                        ></v-text-field>
-                    </v-row>
+                <div>{{ `Total ${this.people_num}` }}</div>
+                <div class="input-wrapper">
+                    <button class="btn-arrow"
+                        @click="countDown">
+                        <i class="fas
+                                  fa-caret-left
+                                  fa-2x"/>
+                    </button>
+                    <v-text-field
+                            v-model="divide_num"
+                            class="people-input"
+                            hide-details
+                            solo
+                            flat
+                    ></v-text-field>
+                    <button class="btn-arrow"
+                         @click="countUp">
+                        <i class="fas
+                                  fa-caret-right
+                                  fa-2x"/>
+                    </button>
                 </div>
-                <div class="info-count">
-                    <div>TOTAL</div>
-                    <div class="info-count-totalNum">{{ this.countPeople }}</div>
+                <div class="btn-result">
+                    <v-btn class="mx-2" width="150px" x-large dark color="dark"
+                           router :to="{ name:'result', params: { name_List: name_lists, divide_Num: divide_num } }">
+                        SHUFFLE
+                    </v-btn>
                 </div>
             </div>
-        <div class="result-btn-wrapper">
-            <div class="result-btn">
-                <v-btn class="mx-2" x-large dark color="dark"
-                       router :to="{ name:'result', params: { nameList: nameLists, divideNum: divideNum, switchChanger: switchChanger } }">
-                    SHUFFLE
-                </v-btn>
-            </div>
+            <v-alert
+                    type="error"
+                    class="alert"
+                    :value="alert">
+                <strong>{{ this.alert_message }}</strong>
+            </v-alert>
         </div>
     </div>
 </template>
 
 <script>
-
     export default{
         data: () => ({
-            jsonKey: [],
-            selectedFileName: null,
-            nameLists: [],
-            getJsonData: null,
-            countPeople: 0,
-            divideNum: null,
-            checkBox_first: false,
-            checkBox_second: false,
-            first_textField_state: true,
-            second_textField_state: true,
-            getPeopleNum: null,
-            getTeamNum: null,
-            switchChanger: null,
-            alert: false
+            file_name_list: [],
+            name_lists: [],
+            selected_file_name: null,
+            object_json: null,
+            alert: false,
+            divide_num: 0,
+            people_num: 0,
+            alert_message: null,
         }),
         created() {
-            const files = require('../assets/save/nameList.json')
-            this.getJsonData = JSON.stringify(files) //getJsonData 에 json 형식의 String 데이터를 삽입
-            this.jsonKey = Object.getOwnPropertyNames(files)
+            const fs = require('fs')
+            let isExist = fs.existsSync('nameList.json' )
+                if(isExist) {
+                    console.log("The file is exist")
+                    fs.readFile('nameList.json', 'utf8', (err, data) => {
+                        if(err) throw console.log(err + " 리드파일 오류")
+
+                        //__ob__삭제
+                        let test = JSON.parse(data)
+                        let test2 = JSON.parse(JSON.stringify(test))
+
+                        this.file_name_list = Object.getOwnPropertyNames(test2)
+                        this.object_json = test2
+                    })
+                }
+                else {
+                    fs.writeFile('nameList.json', JSON.stringify({}, null, 2), (err) => {
+                        if(err) throw console.log(err + " 파일쓰기 오류")
+                            console.log("There is no File")
+                            console.log("create File")
+                    })
+                }
             if(this.$route.params.alert){
                 this.alert = true
+                this.alert_message = this.$route.params.alert_message
             }
         },
         methods: {
+            countDown: function () {
+                if(this.divide_num > 0 && this.selected_file_name != null) this.divide_num -= 1
+            },
+            countUp: function () {
+                if(this.divide_num < this.people_num && this.selected_file_name != null) this.divide_num += 1
+            },
+            delete_file: function () {
+                if( this.selected_file_name == null ){
+                    this.alert = true
+                    this.alert_message = "Select a file you delete"
+                }
+                const fs = require('fs')
+                fs.readFile('nameList.json', 'utf8', (err, data) => {
+                    if(err) throw console.log(err)
+
+                    let test = JSON.parse(data)
+                    delete test[this.selected_file_name]
+                    let test2 = JSON.parse(JSON.stringify(test))
+                    this.file_name_list = Object.getOwnPropertyNames(test2)
+                    this.name_lists = []
+
+                    fs.writeFile('nameList.json', JSON.stringify(test2, null, 2), (err)=> {
+                        if(err) throw console.log(err)
+                        console.log("DATA IS DELETED")
+                    })
+
+
+                })
+            }
         },
         watch: {
-            selectedFileName: function(val) {
-                // 키를 받으면 json 형식의 데이터를 파싱한 후, 받은 키값의 value 를 리턴
-                var getJson = JSON.parse(this.getJsonData)
-                this.countPeople = getJson[val].length
-                for(var i=0; i<getJson[val].length; i++){
-                    this.nameLists.push(getJson[val][i])
+            peopleInput: function(val) {
+                console.log(val)
+              if(val < 0){
+                  this.peopleInput = 0
+              }
+            },
+            selected_file_name: function(val) {
+                this.name_lists = []
+                this.divide_num = 0
+                this.people_num = this.object_json[val].length
+                for(var i=0; i<this.object_json[val].length; i++){
+                    this.name_lists.push(this.object_json[val][i])
                 }
                 this.alert = false
-            },
-            checkBox_first: function (val) {
-                if(this.checkBox_first == true){
-                    this.switchChanger = true
-                    this.checkBox_second = false
-                    this.first_textField_state = !val
-                    this.second_textField_state = val
-                }
-            },
-            checkBox_second: function (val) {
-                if(this.checkBox_second == true){
-                    this.switchChanger = false
-                    this.checkBox_first = false
-                    this.second_textField_state = !val
-                    this.first_textField_state = val
-                }
-            },
-            getPeopleNum: function (val) {
-                this.divideNum = val
-            },
-            getTeamNum: function (val) {
-                this.divideNum = val
             }
         }
     }
 </script>
 
 <style scoped>
+    * {
+        box-sizing: border-box;
+    }
+    .sub-container {
+        position: absolute;
+        top: 10em;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        min-width: 370px;
+        width: 35%;
+        height: 60%;
+        background-color: white;
+        margin: 0 auto auto;
+    }
+    .wrapper > p {
+        margin: 0;
+        font-size: 34px;
+        width: 150px;
+        border-bottom: 5px solid black;
+        color: red;
+        font-weight: bold;
+    }
     .root-wrapper {
-        display: flex;
         width: 100%;
         height: 100%;
+    }
+    .wrapper {
+        display: flex;
         flex-direction: column;
-        padding: 15px;
+        width: 100%;
+        height: 100%;
+        margin: 0 auto;
+        padding: 15px 15px 15px;
+        align-items: center;
+        justify-items: center;
     }
-    .select-wrapper {
-        flex: 1;
-        display: inline-block;
-        padding: 15px 15px 0;
+    .function {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: -3.7em;
+        float: right;
     }
-    .select-file {
-        display: inline-block;
-        width: 50%;
+    .btn-function {
+        margin-bottom: 5px;
     }
     .edit-btn {
         display: inline-block;
     }
-    .info-divide {
+    .file-selecter {
+        flex: 1;
+        align-items: center;
+        width: 150px;
+    }
+    .input-wrapper {
+        flex: 1;
         display: flex;
-        justify-content: center;
     }
-    .input-count {
-        display: inline-block;
-        width: 320px;
+    .btn-arrow {
+        flex: 2;
+        align-self: center;
+        opacity: 0.5;
+        border: 0;
+        outline: 0;
     }
-    .info-count {
-        display: inline-block;
-        margin-left: 10px;
-    }
-    .info-count-totalNum {
-        width: 100px;
-        height: 100px;
-        border: solid;
-        border-radius: 10px;
-
-        display: table-cell;
-        vertical-align: middle;
+    .people-input {
+        flex: 1;
+        align-items: center;
         font-size: 40px;
-        font-weight: bold;
-    }
-    .row {
         margin: 0;
+        padding: 0;
+    }
+    .people-input >>> input {
+        text-align: center;
+    }
+    .btn-result {
+        flex: 1;
+        display: flex;
+    }
+    .btn-result a {
+        align-self: center;
+    }
+    .alert {
+        flex: 1;
     }
 </style>

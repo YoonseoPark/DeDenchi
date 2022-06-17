@@ -31,7 +31,7 @@
     "@vue/cli-service": "^4.1.0",
     "asar": "^2.1.0",
     "babel-eslint": "^10.0.3",
-    "electron": "^6.0.0",
+    "electron": "^15.5.5",
     "electron-builder": "^22.3.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
